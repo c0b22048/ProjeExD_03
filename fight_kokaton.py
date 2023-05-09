@@ -9,7 +9,6 @@ WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 NUM_OF_BOMBS = 5  # 爆弾の数
 
-
 def check_bound(area: pg.Rect, obj: pg.Rect) -> tuple[bool, bool]:
     """
     オブジェクトが画面内か画面外かを判定し，真理値タプルを返す
@@ -23,6 +22,13 @@ def check_bound(area: pg.Rect, obj: pg.Rect) -> tuple[bool, bool]:
     if obj.top < area.top or area.bottom < obj.bottom:  # 縦方向のはみ出し判定
         tate = False
     return yoko, tate
+
+def draw_text(screen, x, y, text, size, col): #文字表示の関数
+    font = pg.font.Font(None, size)
+    s = font.render(text, True, col)
+    x = x - s.get_width()/2
+    y = y - s.get_height()/2
+    screen.blit(s,[x, y])
 
 
 class Bird:
@@ -143,6 +149,19 @@ class Beam:
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
 
+class Score:
+    """
+    得点に関するクラス
+    """
+    def __init__(self, score):
+        self.score = 0
+        fonto = pg.font.Font(None, 80)
+        score_txt = fonto.render({self.score},True,(255,255,255))
+    
+    def update(self, screen:pg.Surface):
+        print(self.score)
+        screen.blit(self.score_txt,[WIDTH/2, HEIGHT/2])
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -153,6 +172,12 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
+    #score = Score()
+    score = 0
+
+    fonto = pg.font.Font(None,80)
+    score_txt = fonto.render(f"{score}",255,255,255)
+
 
     tmr = 0
     while True:
@@ -171,12 +196,17 @@ def main():
             if bird._rct.colliderect(bomb._rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 bird.change_img(8, screen)
+                draw_text(screen, WIDTH/2, HEIGHT/3, "GAME OVER", 300, (255,255,255))
+                draw_text(screen, WIDTH/3, HEIGHT/6, f"SCORE:{score}",100,(255,255,255))
                 pg.display.update()
                 time.sleep(1)
+                
                 return
             
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
+
+        
 
         if beam is not None:  # ビームが存在しているとき
             beam.update(screen)
@@ -184,11 +214,13 @@ def main():
                 if beam._rct.colliderect(bomb._rct):
                     beam = None
                     del bombs[i]
+                    score +=1
                     bird.change_img(6, screen)
                     break
 
         pg.display.update()
         clock.tick(1000)
+        screen.blit(score_txt,[WIDTH/2, HEIGHT/3])
 
 
 if __name__ == "__main__":
