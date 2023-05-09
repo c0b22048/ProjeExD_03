@@ -70,7 +70,7 @@ class Bird:
         引数1 num：こうかとん画像ファイル名の番号
         引数2 screen：画面Surface
         """
-        self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/{num}.png"), 0, 2.0)
+        self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/{num}.png"), 0, 2.0) #２倍に拡大
         screen.blit(self._img, self._rct)
 
     def update(self, key_lst: list[bool], screen: pg.Surface):
@@ -153,7 +153,7 @@ class Score:
     """
     得点に関するクラス
     """
-    def __init__(self, score):
+    def __init__(self, score):#score表示の初期化
         self.score = 0
         fonto = pg.font.Font(None, 80)
         score_txt = fonto.render({self.score},True,(255,255,255))
@@ -195,9 +195,9 @@ def main():
             bomb.update(screen)
             if bird._rct.colliderect(bomb._rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-                draw_text(screen, WIDTH/2, HEIGHT/3, "GAME OVER", 300, (255,255,255))
+                draw_text(screen, WIDTH/2, HEIGHT/3, "GAME OVER", 300, (255,255,255)) #game over の表示
                 bird.change_img(8, screen)
-                draw_text(screen, WIDTH/3, HEIGHT/6, f"SCORE:{score}",100,(255,255,255))
+                draw_text(screen, WIDTH/3, HEIGHT/6, f"SCORE:{score}",100,(255,255,255)) # scoreの表示
                 pg.display.update()
                 time.sleep(1)
                 
@@ -211,7 +211,7 @@ def main():
         if beam is not None:  # ビームが存在しているとき
             beam.update(screen)
             for i, bomb in enumerate(bombs):
-                if beam._rct.colliderect(bomb._rct):
+                if beam._rct.colliderect(bomb._rct):#ビームと爆弾がぶつかったら
                     beam = None
                     del bombs[i]
                     score +=1
